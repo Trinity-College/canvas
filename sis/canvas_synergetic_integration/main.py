@@ -40,7 +40,7 @@ class SIS_Diffing_Parameter:
 # the URL parameters.
 diffing_params = {
     'diffing_drop_status':
-    SIS_Diffing_Parameter(value='deleted_last_completed', type=str,
+    SIS_Diffing_Parameter(value='completed', type=str,
                           description='''If this script is in diffing mode then this script will pass diffing_drop_status as a URL parameter to the POST. Hence the CANVAS SIS import will use this status for enrollments that are
 not included in the sis_batch. Defaults to ‘deleted’.
 Allowed values:
@@ -62,7 +62,6 @@ status to the value of this argument.'''),
                           When scheduling this script to run frequently you should not set this option.
                           ''')
 }
-
 
 @contextlib.contextmanager
 def db_cursor(conn):
@@ -198,7 +197,6 @@ class SIS_ImportStatusError(SI_Exception):
             self.status_code = status_code
             self.text = text
 
-
 def post_data(base_url, header, filename, diffing_mode=False):
     '''
     Posts data to the canvas api endpoint. Returns identifier for import 
@@ -252,7 +250,8 @@ def main(arg_strs):
             kwargs['action'] = param.action
         if param.type:
             kwargs['type'] = param.type
-        ap.add_argument('--'+name, **kwargs)
+        cli_name = '--' + name.replace('_', '-')
+        ap.add_argument(cli_name, **kwargs)
 
     args = ap.parse_args(args=arg_strs)
 
@@ -405,4 +404,3 @@ def go(conn, working_dir, base_url, header, arg_views, diffing_mode=False, no_up
 if __name__ == '__main__':
     import sys
     main(arg_strs=sys.argv[1:])
-
